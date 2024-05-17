@@ -6,12 +6,14 @@ https://github.com/ryan-gz/code_gen_eval
 
 | 测试集        | 类型   | 数据量                            | 描述                                                         | url                                                          |
 | ------------- | ------ | --------------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
-| CodeSearchNet | multi  | over 2 million                    | 10余种代码。用于代码表示学习的数据集、工具和基准。           | https://github.com/github/CodeSearchNet?tab=readme-ov-file#evaluation |
+| human-eval    | multi  | total:163                         | 评估集 HumanEval 用于衡量从文档字符串合成程序的功能正确性.   | https://github.com/openai/human-eval                         |
+| evalpuls      | multi  | over 1000                         | EvalPlus 是 LLM4Code 的严格评估框架，具有： - **HumanEval+**：测试比原始 HumanEval 多 80 倍！ - **MBPP+**：测试比原始 MBPP 多 35 倍！ - **评估框架**：我们的软件包/图像/工具可以轻松、安全地根据上述基准评估LLM。 | https://github.com/evalplus/evalplus                         |
+| CodeSearchNet | multi  | over 2 million                    | 用于代码表示学习的数据集、工具和基准。                       | https://github.com/github/CodeSearchNet?tab=readme-ov-file#evaluation |
 | DS-1000       | python | total:1000                        | 纯python任务，聚焦 pandas/pytorch/Scipy/Sklean/Tensorflow/Matplotlib 包的代码生成 | https://github.com/xlang-ai/DS-1000                          |
 | MBPP          | python | total:1000                        | 由大约 1,000 个 Python 编程问题组成，旨在由入门级程序员解决，涵盖编程基础知识、标准库功能等。 每个问题都包含任务描述、代码解决方案和 3 个自动化测试用例。 | https://github.com/google-research/google-research/tree/master/mbpp |
 | ODEX          | python | total: 439                        | 开放域代码生成的基于执行的评估                               | https://github.com/zorazrw/odex                              |
 | CoNaLa        | python | train:2379, test:500              | 该挑战旨在测试“从自然语言生成程序片段”的系统。               | https://conala-corpus.github.io                              |
-| CoNaLa-Ext    | python | total:11422                       | CoNaLa的扩充                                                 | https://github.com/gabeorlanski/stackoverflow-encourages-cheating |
+| CoNaLa-Ext    | python | total:11422                       | CoNaLa扩充                                                   | https://github.com/gabeorlanski/stackoverflow-encourages-cheating |
 | APPS          | python | train:5000, test:5000             | APPS 数据集由从不同开放访问编码网站（例如 Codeforces、Kattis 等）收集的问题组成。 APPS 基准测试试图反映如何通过以不受限制的自然语言提出编码问题并评估解决方案的正确性来评估人类程序员。 问题的难度从入门到大学竞赛级别不等，衡量编码能力以及解决问题的能力。 | https://github.com/hendrycks/apps                            |
 | Turbulence    | python | total:60                          | Turbulence 是一个新的基准，用于系统地评估用于代码生成的指令调整大型语言模型 (LLM) 的正确性和鲁棒性。 Turbulence 由大量自然语言问题模板组成，每个模板都是一个编程问题，经过参数化，以便可以以多种不同的形式提出问题。 | https://github.com/ShahinHonarvar/Turbulence-Benchmark       |
 | WikiSQL       | sql    | train:56355, test:15878, dev:8421 | 用于开发自然语言界面的大型带注释语义解析语料库。             | https://github.com/salesforce/WikiSQL                        |
@@ -22,11 +24,33 @@ https://github.com/ryan-gz/code_gen_eval
 
 #### 2. 借鉴方案
 
+| 模型          | 使用数据集                          | 度量指标     | url                                         |
+| ------------- | ----------------------------------- | ------------ | ------------------------------------------- |
+| DeepSeekCoder | HumanEval、MBPP、 DS-1000、LeetCode | **pass@1**   | https://arxiv.org/pdf/2401.14196            |
+| StarCoder     | HumanEval、MBPP、 DS-1000、ODEX     | **pass@1**   | https://arxiv.org/pdf/2305.06161            |
+| CodeXGLUE     | CONCODE、CodeSearchNet              | **CodeBLEU** | https://arxiv.org/pdf/2102.04664            |
+| CodeT5        | CONCODE、CodeSearchNet              | **CodeBLEU** | https://arxiv.org/pdf/2109.00859            |
+| evalplus      | HumanEval、MBPP、HumanEval+、MBPP+  | **pass@1**   | https://evalplus.github.io/leaderboard.html |
+
+> **pass@1**: pass@1 是指仅一次生成的通过率。
+>
+> **pass@k** is a metric used to evaluate models that generate code, used for example to evaluate [Codex](https://arxiv.org/abs/2107.03374). To evaluate pass@k, you have a dataset of natural language/code pairs, and you pass each NL prompt to the model. For each prompt, it generates *k* code snippets. If at least one of the code snippets is correct, then the model succeeded at that prompt in *k* samples. The pass@k is the fraction of prompts for which the model succeeded in this sense.
+>
+> ![HumanEval: LLM Benchmark for Code Generation | Deepgram](https://raw.githubusercontent.com/ryan-gz/img_cache/main/uPic/images.png)
+
+> **CodeBLEU**:CodeBLEU是 [BLEU](https://so.csdn.net/so/search?q=BLEU&spm=1001.2101.3001.7020)变体。在BLEU在n-gram匹配上的基础上，进一步通过抽象语法树（AST）融入代码语法，通过数据流融入代码语义。
+>
+> ![CodeBLEU.jpg](https://raw.githubusercontent.com/ryan-gz/img_cache/main/uPic/CodeBLEU.jpg)
+
+
+
 ##### 2.1. DeepSeek-Coder
 
 ![image-20240517141056257](https://raw.githubusercontent.com/ryan-gz/img_cache/main/uPic/image-20240517141056257.png)
 
 ##### 2.2. Starcoder
+
+https://github.com/bigcode-project/bigcode-evaluation-harness/blob/main/bigcode_eval/tasks/humanevalpack.py
 
 ```markdown
 6 Evaluation
@@ -65,7 +89,23 @@ Second, we evaluate our models on further programming languages using MultiPL-E 
 
 ##### 3.1. CODE GEN BENCHMARK
 
-1. DS-1000(Data Science 1000)
+1. Human-eval
+
+   https://github.com/openai/human-eval
+
+   On HumanEval, a new evalua- tion set we release to measure functional correct- ness for synthesizing programs from docstrings, our model solves 28.8% of the problems, while GPT-3 solves 0% and GPT-J solves 11.4%. Fur- thermore, we find that repeated sampling from the model is a surprisingly effective strategy for pro- ducing working solutions to difficult prompts.
+
+2. Evalpuls
+
+   https://github.com/evalplus/evalplus
+
+   EvalPlus is a rigorous evaluation framework for LLM4Code, with:
+
+   - **HumanEval+**: 80x more tests than the original HumanEval!
+   - **MBPP+**: 35x more tests than the original MBPP!
+   - **Evaluation framework**: our packages/images/tools can easily and safely evaluate LLMs on above benchmarks.
+
+3. DS-1000(Data Science 1000)
 
    https://github.com/xlang-ai/DS-1000
 
@@ -73,7 +113,7 @@ Second, we evaluate our models on further programming languages using MultiPL-E 
 
    Official data and code release for the paper "DS-1000: A Natural and Reliable Benchmark for Data Science Code Generation"
 
-2. MBPP:   Mostly Basic Python Problems Dataset
+4. MBPP:   Mostly Basic Python Problems Dataset
 
    https://github.com/google-research/google-research/tree/master/mbpp
 
