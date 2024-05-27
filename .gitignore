@@ -12,6 +12,9 @@ __pycache__/
 *.txt
 *.DS_Store
 .DS_Store
+!eval_retriever/data/*.json
+!eval_retriever/preds/*.json
+
 # C extensions
 *.so
 
