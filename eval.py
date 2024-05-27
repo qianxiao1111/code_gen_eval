@@ -10,23 +10,27 @@ warnings.filterwarnings(action="ignore")
 def evaluate_metrics(
     pred_tables_path, label_tables_path, pred_columns_path, label_columns_path
 ):
-    # Load data
     pred_tables = load_json(pred_tables_path)
     pred_columns = load_json(pred_columns_path)
     label_tables = load_json(label_tables_path)
     label_columns = load_json(label_columns_path)
 
-    # Calculate metrics
-    results = {
-        "averaged_tables": Metric.averaged(pred_tables, label_tables),
-        "averaged_columns": Metric.averaged(pred_columns, label_columns),
-        "jaccard_tables": Metric.jaccard(pred_tables, label_tables),
-        "jaccard_columns": Metric.jaccard(pred_columns, label_columns),
-        "hamming_tables": Metric.hamming(pred_tables, label_tables),
-        "hamming_columns": Metric.hamming(pred_columns, label_columns),
-    }
+    def combine_metrics_under_key(pred_data, label_data, key):
+        combined_metrics = {}
+        for metric_name in ["averaged", "jaccard", "hamming"]:
+            metric_results = getattr(Metric, metric_name)(pred_data, label_data)
+            combined_metrics.update(metric_results)
 
-    return results
+        return {key: combined_metrics}
+
+    table_metrics_combined = combine_metrics_under_key(
+        pred_tables, label_tables, "table"
+    )
+    column_metrics_combined = combine_metrics_under_key(
+        pred_columns, label_columns, "column"
+    )
+    merged_results = {**table_metrics_combined, **column_metrics_combined}
+    return merged_results
 
 
 def main():
