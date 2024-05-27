@@ -8,11 +8,11 @@ pred_tables = []
 pred_columns = []
 
 # files
-querys = load_json("eval_retriever/data/querys.json")
-tables = load_json("eval_retriever/data/tables.json")
-label_tables = load_json("eval_retriever/data/y_tables.json")
-label_columns = load_json("eval_retriever/data/y_columns.json")
-path_to_save = "eval_retriever/preds"
+querys = load_json("data/querys.json")
+tables = load_json("data/tables.json")
+label_tables = load_json("data/y_tables.json")
+label_columns = load_json("data/y_columns.json")
+path_to_save = "preds"
 
 # random choice
 for query in querys:

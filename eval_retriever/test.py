@@ -1,9 +1,36 @@
 import json
-from eval_retriever.metrics import Metric
-from eval_retriever.utils import load_json
+from metrics import Metric
+from gen import SqlGenChain, PyGenChain
+from utils import (
+    load_json,
+    load_llm,
+    key_query,
+    extract_db_info,
+)
 import warnings
 
 warnings.filterwarnings(action="ignore")
+
+# gen
+querys = load_json("eval_retriever/data/querys.json")
+tables = load_json("eval_retriever/data/tables.json")
+llm = load_llm(infer_url="http://localhost:8081", model="hf")
+sql_gen_chain = SqlGenChain.from_llm(llm=llm)
+py_gen_chain = PyGenChain.from_llm(llm=llm)
+
+for query in querys:
+    query_string = query[key_query[query["from"]]]
+    db_info = [
+        db
+        for db in tables
+        if (db["db_id"] == query["db_id"]) & (db["from"] == query["from"])
+    ][0]
+    table_infos = extract_db_info(db_info)
+    resp = sql_gen_chain.predict(table_infos=table_infos, query=query)
+    print(resp)
+    resp = py_gen_chain.predict(table_infos=table_infos, query=query)
+    print(resp)
+
 # pred
 pred_tables = load_json("eval_retriever/preds/pred_tables.json")
 pred_columns = load_json("eval_retriever/preds/pred_columns.json")
@@ -82,7 +109,7 @@ print(top_orders[['customer_name', 'order_date', 'country']])
 resp = extract_from_python(code, python_chain)
 print(resp)
 
-# {
-#     "tables": ["orders.csv", " customers.csv"],
-#     "columns": ["customer_name", " order_date", " country"],
-# }
+{
+    "tables": ["orders.csv", " customers.csv"],
+    "columns": ["customer_name", " order_date", " country"],
+}

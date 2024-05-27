@@ -3,6 +3,50 @@ from langchain.llms import HuggingFaceTextGenInference
 from langchain_core.language_models.llms import LLM
 
 
+key_query = {
+    "SPIDER_dev": "query",
+    "BIRD_dev": "SQL",
+}
+
+
+def rename_columns(columns, db_info):
+    resp = []
+    for column in columns:
+        tmp = [
+            "{}.{}".format(db_info["table_names"][info[0]], column)
+            for info in db_info["column_names"]
+            if info[1] == column
+        ]
+        resp.extend(tmp)
+    return resp
+
+
+def extract_db_info(db_info):
+    # 提取并格式化表信息
+    tableinfo = {}
+    for i, table_name in enumerate(db_info["table_names"]):
+        column_list = [col[1] for col in db_info["column_names"] if col[0] == i]
+        tableinfo[table_name] = column_list
+
+    # 外键信息处理
+    foreign_keys = db_info["foreign_keys"]
+    foreign_keys_info = []
+    for fk in foreign_keys:
+        idx0, idx1 = fk
+        fk0 = db_info["column_names"][idx0]
+        fk1 = db_info["column_names"][idx1]
+        foreign_keys_info.append(
+            "{}.{} = {}.{}".format(
+                db_info["table_names"][fk0[0]],
+                fk0[1],
+                db_info["table_names"][fk1[0]],
+                fk1[1],
+            )
+        )
+
+    return "table:\n{}\nforeign_keys:{}\n".format(tableinfo, foreign_keys_info)
+
+
 def load_json(path_to_json: str):
     with open(path_to_json, "r", encoding="utf-8") as f:
         resp = json.load(f)

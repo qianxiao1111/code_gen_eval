@@ -1,7 +1,7 @@
 from typing import Dict
 from sql_metadata import Parser
-from eval_retriever.chain_extract_sql import ExtractSqlChain
-from eval_retriever.chain_extract_python import ExtractPythonChain
+from chain_extract_sql import ExtractSqlChain
+from chain_extract_python import ExtractPythonChain
 
 
 def parser_from_sql(sql: str) -> Dict:

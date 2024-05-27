@@ -1,8 +1,8 @@
 import os
 import json
 from tqdm import tqdm
-from eval_retriever.utils import load_llm
-from eval_retriever.chain_extract_sql import ExtractSqlChain
+from utils import load_llm
+from chain_extract_sql import ExtractSqlChain
 
 
 llm = load_llm(infer_url="http://localhost:8081", model="hf")
@@ -15,8 +15,8 @@ columns_true = []
 
 
 # 取两个 dev_gold.sql 提取 table 和 column
-path_to_BIRD = "datasets/BIRD_dev"
-path_to_save = "eval_retriever/data/llm"
+path_to_BIRD = "../datasets/BIRD_dev"
+path_to_save = "data/llm"
 
 # 制作数据集、问题、正确答案（表格、结果）
 with open(os.path.join(path_to_BIRD, "dev_tables.json")) as f:
@@ -51,7 +51,7 @@ for query in tqdm(querys_bird):
     except Exception as e:
         print(e)
 
-path_to_SPIDER = "datasets/spider"
+path_to_SPIDER = "../datasets/spider"
 with open(os.path.join(path_to_SPIDER, "tables.json")) as f:
     tables_spider = json.load(f)
 with open(os.path.join(path_to_SPIDER, "dev.json")) as f:
