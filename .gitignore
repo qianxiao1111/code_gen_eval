@@ -16,6 +16,7 @@ __pycache__/
 .DS_Store
 !eval_retriever/data/*.json
 !eval_retriever/preds/*.json
+!reject_eval/*.json
 
 # C extensions
 *.so
