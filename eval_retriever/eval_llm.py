@@ -45,14 +45,14 @@ def gen_preds(
         table_infos = extract_db_info(db_info)
         sql_code = sql_gen_chain.predict(table_infos=table_infos, query=question)
         print("\n")
-        print("generate sql:\n{}".format(sql_code))
+        print("SQL:\n```\n{}\n```".format(sql_code))
         retract_sql = sql_extract_chain.predict(code=sql_code)
         sql_pred_tables.append(retract_sql["tables"])
         sql_pred_columns.append(retract_sql["columns"])
         # python
         py_code = py_gen_chain.predict(table_infos=table_infos, query=question)
         print("\n")
-        print("generate python:\n{}".format(py_code))
+        print("Python:\n```\n{}\n```".format(py_code))
         retract_py = py_extract_chain.predict(code=py_code)
         # columns 需要加上 tablename
         retract_py["columns"] = rename_columns(retract_py["columns"], db_info)
